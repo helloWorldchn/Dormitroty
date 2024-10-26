@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.DormitoryMapper">
+    <resultMap id="DormitoryMap" type="Dormitory">
+        <result column="id" property="id"/>
+        <result column="dorm_no" property="dormNo"/>
+        <result column="dorm_introduction" property="dormIntroduction"/>
+        <result column="dorm_honour" property="dormHonour"/>
+        <result column="dorm_director" property="dormDirector"/>
+    </resultMap>
+    <select id="getDormitoryList" resultMap="DormitoryMap">
+        select * from dormitory where 1=1
+        <if test="dormNo != null">
+            and dorm_no like concat('%',#{dormNo},'%')
+        </if>
+        <if test="dormHonour != null">
+            and dorm_honour like concat('%',#{dormHonour},'%')
+        </if>
+    </select>
+    <select id="getDormitoryById" resultMap="DormitoryMap" parameterType="int">
+        select * from dormitory where id = #{id};
+    </select>
+    <insert id="addDormitory" parameterType="Dormitory">
+        insert into dormitory (dorm_no,dorm_introduction,dorm_honour,dorm_director)
+        values (#{dormNo},#{dormIntroduction},#{dormHonour},#{dormDirector});
+    </insert>
+
+    <update id="updateDormitory" parameterType="Dormitory">
+        update dormitory set dorm_no = #{dormNo},dorm_introduction=#{dormIntroduction},
+                             dorm_honour=#{dormHonour},dorm_director=#{dormDirector} where id = #{id}
+    </update>
+
+    <delete id="deleteDormitoryById" parameterType="int">
+        delete from dormitory where id = #{id}
+    </delete>
+
+</mapper>

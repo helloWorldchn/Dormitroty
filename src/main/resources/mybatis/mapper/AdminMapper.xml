@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AdminMapper">
+    <resultMap id="AdminMap" type="Admin">
+        <id property="id" column="aid"/>
+        <result property="adminName" column="admin_name"/>
+        <result property="adminCode" column="admin_code"/>
+        <result property="adminPhone" column="admin_phone"/>
+        <result property="adminRole" column="admin_role"/>
+        <result property="gender" column="gender"/>
+        <result property="adminPassword" column="admin_password"/>
+        <association property="aRole"  javaType="Role">
+            <id property="id" column="rid"/>
+            <result property="roleName" column="rname"/>
+        </association>
+    </resultMap>
+    <select id="getAdminList" resultMap="AdminMap">
+        select a.id as aid,admin_name,admin_code,admin_phone,gender,admin_password,r.id as rid,
+               r.role_name as rname from role r,admin a where r.id = a.admin_role
+        <if test="queryAdminName != null and !queryAdminName.equals('')">
+            and a.admin_name like concat('%',#{queryAdminName},'%')
+        </if>
+        <if test="queryAdminRole > 0">
+            and a.admin_role = #{queryAdminRole}
+        </if>
+    </select>
+
+    <select id="getAdminById" resultMap="AdminMap">
+        select * , a.id as aid,r.role_name as rname from admin a,role r where a.id= #{id} and a.admin_role = r.id
+    </select>
+
+    <insert id="addAdmin" parameterType="Admin">
+        insert into admin (admin_name,admin_phone,gender,admin_role,admin_code,admin_password)
+            values (#{adminName},#{adminPhone},#{gender},#{adminRole},#{adminCode},#{adminPassword});
+    </insert>
+
+    <update id="updateAdmin" parameterType="Admin">
+        update admin set admin_name = #{adminName},admin_code=#{adminCode},admin_phone=#{adminPhone},
+            gender=#{gender},admin_role=#{adminRole},admin_password=#{adminPassword} where id = #{id}
+    </update>
+
+    <delete id="deleteAdminById" parameterType="int">
+        delete from admin where id = #{id}
+    </delete>
+
+    <select id="getLoginAdmin" resultMap="AdminMap">
+        select * ,id as aid from admin where admin_code = #{adminCode}
+    </select>
+</mapper>
